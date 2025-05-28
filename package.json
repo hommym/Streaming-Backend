@@ -1,0 +1,43 @@
+{
+  "name": "streaming-backend",
+  "version": "1.0.0",
+  "description": "Backend System For Small Scale Streaming System",
+  "scripts": {
+    "server:main": "tsc&nodemon ./build/servers/main/index.js",
+    "server:file": "tsc&nodemon ./build/servers/file/index.js",
+    "server:ws": "tsc&nodemon ./build/servers/ws/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bcrypt": "^6.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "cors": "^2.8.5",
+    "cron": "^4.3.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
+    "mysql2": "^3.14.1",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "stripe": "^18.1.1",
+    "systeminformation": "^5.27.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/multer": "^1.4.12",
+    "@types/nodemailer": "^6.4.17"
+  },
+  "keywords": [],
+  "author": "Herberth Arthur",
+  "license": "ISC"
+}
