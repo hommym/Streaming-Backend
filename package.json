@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Backend System For Small Scale Streaming System",
   "scripts": {
-    "server:main": "tsc&nodemon ./build/servers/main/index.js",
+    "server:main": "tsc&nodemon ./build/servers/main/main.js",
     "server:file": "tsc&nodemon ./build/servers/file/index.js",
     "server:ws": "tsc&nodemon ./build/servers/ws/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
