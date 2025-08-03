@@ -4,19 +4,20 @@ import "reflect-metadata";
 import express from "express";
 import cors from "cors";
 import { database } from "../../database/database";
+import { mainServerRouter } from "./router";
+import { errorHandler } from "../../common/middlewares/errorHandler";
 
 export const app = express();
 
 app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], credentials: true }));
 
 // routes
-// app.use("/api/v1", httpRouter);
+app.use("/api/v1", mainServerRouter);
 
 // error handling middlware
-// app.use(errorHandler);
+app.use(errorHandler);
 
-// ws middleware
-// ws.use(verifyJwtForWs)
+
 
 const port = process.env.PORT ? process.env.PORT : 8000;
 

@@ -10,14 +10,14 @@ require("reflect-metadata");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const database_1 = require("../../database/database");
+const router_1 = require("./router");
+const errorHandler_1 = require("../../common/middlewares/errorHandler");
 exports.app = (0, express_1.default)();
 exports.app.use((0, cors_1.default)({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], credentials: true }));
 // routes
-// app.use("/api/v1", httpRouter);
+exports.app.use("/api/v1", router_1.mainServerRouter);
 // error handling middlware
-// app.use(errorHandler);
-// ws middleware
-// ws.use(verifyJwtForWs)
+exports.app.use(errorHandler_1.errorHandler);
 const port = process.env.PORT ? process.env.PORT : 8000;
 const startServer = async () => {
     try {
