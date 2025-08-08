@@ -20,8 +20,6 @@ class AuthController {
     this.contoller.addRoute<ResetAccountDto, SimpleResponse>("post", "/reset-password", this.authService.resetAccount, ResetAccountDto);
     this.contoller.addRoute<ChangePasswordDto, SimpleResponse>("post", "/change-password", this.authService.changePasswd, ChangePasswordDto);
 
-
-  
   }
 
   constructor() {

@@ -36,7 +36,6 @@ class AuthService {
             const publicUser = {
                 fullName: user.fullName,
                 email: user.email,
-                userType: user.userType,
             };
             return new loginResponse_1.LoginResponse(token, publicUser);
         };
