@@ -7,21 +7,21 @@ import { readdir, readFile } from "fs/promises";
 
 export class Database {
   dbPool: Pool;
-  private migPath = path.join(__dirname, "/migrations"); // path to db migration files
+  private migPath = path.join(__dirname, "migrations");
 
   constructor(dbUrl: string | undefined) {
-    if (!dbUrl) {
-      throw new DatabaseException("dbUrl undefined", "ddl");
-    }
+    if (!dbUrl) throw new DatabaseException("dbUrl undefined", "ddl");
+    // Option A (works on mysql2 with uri support):
     this.dbPool = mysql.createPool({ uri: dbUrl, multipleStatements: true });
+    // Option B (portable): ensure DATABASE_URL includes '?multipleStatements=true'
+    // this.dbPool = mysql.createPool(dbUrl);
   }
 
   async dbInit(resetDB: boolean = false) {
-    // go into migration folder
-    const files = await readdir(this.migPath); // list of the names of files
+    const files = (await readdir(this.migPath)).filter((f) => f.endsWith(".sql")).sort();
     console.log("Applying Migrations...");
     if (resetDB) await this.resetDB();
-    for (let file of files) {
+    for (const file of files) {
       const filePath = path.join(this.migPath, file);
       const queries = await readFile(filePath, { encoding: "utf-8" });
       await this.dbPool.query(queries);
@@ -30,20 +30,25 @@ export class Database {
   }
 
   private async resetDB() {
-    if (!process.env.DATABASE_NAME) throw new DatabaseException("No value for env variable:DATABASE_NAME", "ddl");
     const dbName = process.env.DATABASE_NAME;
+    if (!dbName) throw new DatabaseException("No value for env variable:DATABASE_NAME", "ddl");
+
     await this.dbPool.query("SET FOREIGN_KEY_CHECKS = 0;");
+    try {
+      const [results] = await this.dbPool.query<any[]>("SELECT TABLE_NAME AS table_name FROM information_schema.tables WHERE TABLE_SCHEMA = ?;", [dbName]);
 
-    // get all table names within the db
-    const [results] = await this.dbPool.execute<any[]>("SELECT table_name FROM information_schema.tables" + ` WHERE TABLE_SCHEMA='${dbName}';`);
-
-    // drop all these tables using names
-    for (let row of results) {
-      const tableName = row["TABLE_NAME"];
-      await this.dbPool.execute(`DROP TABLE ${tableName};`);
+      for (const row of results) {
+        const tableName = String(row["table_name"]);
+        const escaped = tableName.replace(/`/g, "``");
+        await this.dbPool.query(`DROP TABLE IF EXISTS \`${escaped}\`;`);
+      }
+    } finally {
+      await this.dbPool.query("SET FOREIGN_KEY_CHECKS = 1;");
     }
+  }
 
-    await this.dbPool.query("SET FOREIGN_KEY_CHECKS = 1;");
+  async close() {
+    await this.dbPool.end();
   }
 }
 
