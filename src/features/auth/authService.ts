@@ -1,28 +1,88 @@
+import { Request } from "express";
 import { JwtService } from "../../common/utils/services/jwtService";
 import { PasswdService } from "../../common/utils/services/passwdService";
-
+import { SignupDto } from "./dtos/signupDto";
+import { LoginDto } from "./dtos/loginDto";
+import { UpdateAccountInfoDto } from "./dtos/updateAccountInfoDto";
+import { ChangePasswordDto } from "./dtos/changePasswordDto";
+import { ResetAccountDto } from "./dtos/resetAccountDto";
+import { userRepository } from "../../database/repositories/userRepository";
+import { UserType } from "../../database/models/user";
+import { BadReqException } from "../../common/exceptions/http/badReq";
+import { SimpleResponse } from "../../common/utils/dtos/simpleResponse";
+import { LoginResponse } from "./dtos/loginResponse";
+import { ResourceConflict } from "../../common/exceptions/http/resourceConflict";
+import { UnauthReqException } from "../../common/exceptions/http/unauthReq";
 
 export class AuthService {
+  private passwdService = new PasswdService();
+  private jwtService = new JwtService();
 
-  
-  private passwdService=new PasswdService();
-  private jwtService=new JwtService();  
-  
-  public async createAccount() {}
-
-  public async login() {}
-
-  public async updateAccountInfo() {}
-
-  public async deleteAccount() {}
-
-  public async changePasswd(){
-
+  private getUserIdFromRequest(req: Request): number {
+    const auth = req.headers["authorization"] || req.headers["Authorization"];
+    if (!auth || Array.isArray(auth)) throw new UnauthReqException("Missing Authorization header");
+    const parts = auth.split(" ");
+    if (parts.length !== 2 || parts[0] !== "Bearer") throw new UnauthReqException("Invalid Authorization header");
+    const payload = this.jwtService.verifyToken(parts[1]) as { userId: number };
+    if (!payload?.userId) throw new UnauthReqException("Invalid authentication token");
+    return payload.userId;
   }
 
-  public async resetAccount(){
+  public async createAccount(dto: SignupDto, req: Request) {
+    const existing = await userRepository.findByEmail(dto.email);
+    if (existing) throw new ResourceConflict("Email already in use");
+    const passwordHash = await this.passwdService.encryptData(dto.password);
+    const created = await userRepository.create({
+      fullName: dto.fullName,
+      email: dto.email,
+      passwordHash,
+      userType: dto.userType,
+    });
+    return new SimpleResponse("Account created successfully");
+  }
 
+  public async login(dto: LoginDto, req: Request) {
+    const user = await userRepository.findByEmail(dto.email);
+    if (!user) throw new BadReqException("Invalid email or password");
+    await this.passwdService.verifyEncryptedData(dto.password, user.passwordHash);
+    const token = this.jwtService.generateToken(user.id);
+    return new LoginResponse(token, user);
+  }
+
+  public async updateAccountInfo(dto: UpdateAccountInfoDto, req: Request) {
+    const userId = this.getUserIdFromRequest(req);
+    const updated = await userRepository.updateById(userId, {
+      fullName: dto.fullName,
+      email: dto.email,
+    });
+    if (!updated) throw new BadReqException("User not found");
+    return new SimpleResponse("Account updated");
+  }
+
+  public async deleteAccount(_dto: undefined, req: Request) {
+    const userId = this.getUserIdFromRequest(req);
+    const ok = await userRepository.deleteById(userId);
+    if (!ok) throw new BadReqException("User not found");
+    return new SimpleResponse("Account deleted");
+  }
+
+  public async changePasswd(dto: ChangePasswordDto, req: Request) {
+    const userId = this.getUserIdFromRequest(req);
+    const user = await userRepository.findById(userId);
+    if (!user) throw new BadReqException("User not found");
+    await this.passwdService.verifyEncryptedData(dto.oldPassword, user.passwordHash);
+    const newHash = await this.passwdService.encryptData(dto.newPassword);
+    await userRepository.updateById(userId, { passwordHash: newHash });
+    return new SimpleResponse("Password changed");
+  }
+
+  public async resetAccount(dto: ResetAccountDto, req: Request) {
+    const user = await userRepository.findByEmail(dto.email);
+    if (!user) throw new BadReqException("User not found");
+    const newHash = await this.passwdService.encryptData(dto.newPassword);
+    await userRepository.updateById(user.id, { passwordHash: newHash });
+    return new SimpleResponse("Account reset");
   }
 }
 
-export const authService=new AuthService();
+export const authService = new AuthService();
