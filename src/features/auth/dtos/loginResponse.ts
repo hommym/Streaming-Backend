@@ -1,5 +1,4 @@
 import { Expose } from "class-transformer";
-import { UserType } from "../../../database/models/user";
 
 export class LoginResponse {
   @Expose()
@@ -17,5 +16,4 @@ export class LoginResponse {
 export interface PublicUser {
   fullName: string;
   email: string;
-  userType: UserType;
 }

@@ -49,7 +49,6 @@ export class AuthService {
     const publicUser: PublicUser = {
       fullName: user.fullName,
       email: user.email,
-      userType: user.userType,
     };
     return new LoginResponse(token, publicUser);
   };
