@@ -2,7 +2,7 @@ CREATE TABLE user(
     id           BIGINT PRIMARY KEY AUTO_INCREMENT,
     full_name    VARCHAR(50) NOT NULL,
     email        VARCHAR(20) NOT NULL UNIQUE    ,
-    passwd       VARCHAR(50) NOT NULL,
+    passwd       MEDIUMTEXT  NOT NULL,
     user_type    ENUM('admin','norm') NOT NULL
 );
 
