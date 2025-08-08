@@ -1,15 +1,21 @@
 import { Expose } from "class-transformer";
-import { User } from "../../../database/models/user";
+import { UserType } from "../../../database/models/user";
 
 export class LoginResponse {
   @Expose()
   token!: string;
 
   @Expose()
-  user!: User;
+  user!: PublicUser;
 
-  constructor(token: string, user: User) {
+  constructor(token: string, user: PublicUser) {
     this.token = token;
     this.user = user;
   }
+}
+
+export interface PublicUser {
+  fullName: string;
+  email: string;
+  userType: UserType;
 }

@@ -12,11 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignupDto = void 0;
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
-const user_1 = require("../../../database/models/user");
 class SignupDto {
-    constructor() {
-        this.userType = user_1.UserType.Normal;
-    }
 }
 exports.SignupDto = SignupDto;
 __decorate([
@@ -36,8 +32,3 @@ __decorate([
     (0, class_validator_1.MinLength)(6),
     __metadata("design:type", String)
 ], SignupDto.prototype, "password", void 0);
-__decorate([
-    (0, class_transformer_1.Expose)(),
-    (0, class_validator_1.IsEnum)(user_1.UserType),
-    __metadata("design:type", String)
-], SignupDto.prototype, "userType", void 0);

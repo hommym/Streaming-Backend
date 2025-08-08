@@ -17,7 +17,5 @@ export class SignupDto {
   @MinLength(6)
   password!: string;
 
-  @Expose()
-  @IsEnum(UserType)
-  userType: UserType = UserType.Normal;
+ 
 }
