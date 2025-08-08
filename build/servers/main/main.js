@@ -14,6 +14,7 @@ const router_1 = require("./router");
 const errorHandler_1 = require("../../common/middlewares/errorHandler");
 exports.app = (0, express_1.default)();
 exports.app.use((0, cors_1.default)({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], credentials: true }));
+exports.app.use(express_1.default.json());
 // routes
 exports.app.use("/api/v1", router_1.mainServerRouter);
 // error handling middlware
