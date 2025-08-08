@@ -5,7 +5,7 @@ import asyncHandler from "express-async-handler";
 import { BadReqException } from "../../exceptions/http/badReq";
 
 export class Controller {
-  private router = Router();
+  private  router = Router();
 
   // Overload for routes without DTO validation
   public addRoute<R>(method: RouteType, path: string, serviceMethod: (arg1: undefined, req: Request) => Promise<R> | R): void;
@@ -24,7 +24,7 @@ export class Controller {
           });
           const errors = await validate(dtoInstance);
           if (errors.length > 0) {
-            throw new BadReqException(this.formatValidationErrors(errors));
+            throw new BadReqException("Invalid Request Body");
           }
         }
 
@@ -38,20 +38,7 @@ export class Controller {
     );
   }
 
-  private formatValidationErrors(errors: ValidationError[]): string {
-    const details: Array<{ field: string; messages: string[] }> = [];
-    const collect = (err: ValidationError, path: string) => {
-      const fieldPath = path ? `${path}.${err.property}` : err.property;
-      const messages = err.constraints ? Object.values(err.constraints) : [];
-      if (messages.length) details.push({ field: fieldPath, messages });
-      if (err.children && err.children.length) {
-        for (const child of err.children) collect(child, fieldPath);
-      }
-    };
-    for (const e of errors) collect(e, "");
-    return `Invalid Request Body: ${JSON.stringify(details)}`;
-  }
-
+ 
   public getRouter() {
     return this.router;
   }

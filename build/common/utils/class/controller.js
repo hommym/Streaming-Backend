@@ -25,7 +25,7 @@ class Controller {
                 });
                 const errors = await (0, class_validator_1.validate)(dtoInstance);
                 if (errors.length > 0) {
-                    throw new badReq_1.BadReqException(this.formatValidationErrors(errors));
+                    throw new badReq_1.BadReqException("Invalid Request Body");
                 }
             }
             const result = await serviceMethod(dtoInstance, req);
@@ -35,22 +35,6 @@ class Controller {
             }
             res.json(result);
         }));
-    }
-    formatValidationErrors(errors) {
-        const details = [];
-        const collect = (err, path) => {
-            const fieldPath = path ? `${path}.${err.property}` : err.property;
-            const messages = err.constraints ? Object.values(err.constraints) : [];
-            if (messages.length)
-                details.push({ field: fieldPath, messages });
-            if (err.children && err.children.length) {
-                for (const child of err.children)
-                    collect(child, fieldPath);
-            }
-        };
-        for (const e of errors)
-            collect(e, "");
-        return `Invalid Request Body: ${JSON.stringify(details)}`;
     }
     getRouter() {
         return this.router;
