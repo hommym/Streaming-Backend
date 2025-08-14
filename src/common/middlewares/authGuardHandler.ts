@@ -25,7 +25,8 @@ class AuthGuard {
     if (this.isPathPublic(`${req.baseUrl}${req.url}`)) {
       next();
     } else {
-      req.user = await userRepository.findById(this.getUserIdFromRequest(req));
+      const user = await userRepository.findById(this.getUserIdFromRequest(req));
+      if (!user) throw new UnauthReqException("Invalid Auth Token");
     }
   });
 }
