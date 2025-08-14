@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { ServerErrException } from "../../exceptions/http/serverError";
 import { UnauthReqException } from "../../exceptions/http/unauthReq";
 
-export class JwtService {
+ class JwtService {
   secret: string ;
 
   constructor() {
@@ -25,3 +25,6 @@ export class JwtService {
   }
 }
 
+
+
+export const jwtService=new JwtService();

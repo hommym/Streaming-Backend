@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { ServerErrException } from "../../exceptions/http/serverError";
 import { UnauthReqException } from "../../exceptions/http/unauthReq";
 
-export class PasswdService {
+ class PasswdService {
   private encryptRounds: number;
 
   constructor() {
@@ -21,3 +21,5 @@ export class PasswdService {
     if (!isPasswordCorrect) throw new UnauthReqException("Invalid Password and Email");
   };
 }
+
+export const passwdService=new PasswdService();

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtService = void 0;
+exports.jwtService = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -28,4 +28,4 @@ class JwtService {
         }
     }
 }
-exports.JwtService = JwtService;
+exports.jwtService = new JwtService();
