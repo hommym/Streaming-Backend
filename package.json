@@ -2,6 +2,7 @@
   "name": "streaming-backend",
   "version": "1.0.0",
   "description": "Backend System For Small Scale Streaming System",
+  "type": "commonjs",
   "scripts": {
     "server:main": "tsc&nodemon ./build/servers/main/main.js",
     "server:file": "tsc&nodemon ./build/servers/file/index.js",
