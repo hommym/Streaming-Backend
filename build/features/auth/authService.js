@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authService = exports.AuthService = void 0;
+const crypto_1 = require("crypto");
 const jwtService_1 = require("../../common/utils/services/jwtService");
 const passwdService_1 = require("../../common/utils/services/passwdService");
 const userRepository_1 = require("../../database/repositories/userRepository");
@@ -9,7 +10,8 @@ const badReq_1 = require("../../common/exceptions/http/badReq");
 const simpleResponse_1 = require("../../common/utils/dtos/simpleResponse");
 const loginResponse_1 = require("./dtos/loginResponse");
 const resourceConflict_1 = require("../../common/exceptions/http/resourceConflict");
-const unauthReq_1 = require("../../common/exceptions/http/unauthReq");
+const serverEvents_1 = require("../../events/serverEvents");
+const resourceNotFound_1 = require("../../common/exceptions/http/resourceNotFound");
 class AuthService {
     constructor() {
         this.passwdService = passwdService_1.passwdService;
@@ -25,6 +27,8 @@ class AuthService {
                 passwordHash,
                 userType: user_1.UserType.Normal,
             });
+            // await emailService.sendWelcomeEmail(dto.email, dto.fullName);
+            serverEvents_1.serverEvents.emit("send-congrats-email", { fullName: dto.fullName, recipientEmail: dto.email });
             return new simpleResponse_1.SimpleResponse("Account created successfully");
         };
         this.login = async (dto, req) => {
@@ -40,52 +44,45 @@ class AuthService {
             return new loginResponse_1.LoginResponse(token, publicUser);
         };
         this.updateAccountInfo = async (dto, req) => {
-            const userId = this.getUserIdFromRequest(req);
-            const updated = await userRepository_1.userRepository.updateById(userId, {
+            const userId = req.user.id;
+            await userRepository_1.userRepository.updateById(userId, {
                 fullName: dto.fullName,
                 email: dto.email,
             });
-            if (!updated)
-                throw new badReq_1.BadReqException("User not found");
             return new simpleResponse_1.SimpleResponse("Account updated");
         };
         this.deleteAccount = async (_dto, req) => {
-            const userId = this.getUserIdFromRequest(req);
-            const ok = await userRepository_1.userRepository.deleteById(userId);
-            if (!ok)
-                throw new badReq_1.BadReqException("User not found");
+            const userId = req.user.id;
+            await userRepository_1.userRepository.deleteById(userId);
             return new simpleResponse_1.SimpleResponse("Account deleted");
         };
         this.changePasswd = async (dto, req) => {
-            const userId = this.getUserIdFromRequest(req);
-            const user = await userRepository_1.userRepository.findById(userId);
-            if (!user)
-                throw new badReq_1.BadReqException("User not found");
-            await this.passwdService.verifyEncryptedData(dto.oldPassword, user.passwordHash);
+            await this.passwdService.verifyEncryptedData(dto.oldPassword, req.user.passwordHash);
             const newHash = await this.passwdService.encryptData(dto.newPassword);
-            await userRepository_1.userRepository.updateById(userId, { passwordHash: newHash });
+            await userRepository_1.userRepository.updateById(req.user.id, { passwordHash: newHash });
             return new simpleResponse_1.SimpleResponse("Password Changed Sucessful");
         };
         this.resetAccount = async (dto, req) => {
             const user = await userRepository_1.userRepository.findByEmail(dto.email);
             if (!user)
-                throw new badReq_1.BadReqException("User not found");
-            const newHash = await this.passwdService.encryptData(dto.newPassword);
+                throw new resourceNotFound_1.ResourceNotFoundException("No Account With this email exist");
+            const randomPassword = this.generateRandomPassword(12);
+            const newHash = await this.passwdService.encryptData(randomPassword);
             await userRepository_1.userRepository.updateById(user.id, { passwordHash: newHash });
+            // await emailService.sendPasswordResetEmail(user.email, user.fullName, randomPassword);
+            serverEvents_1.serverEvents.emit("send-reset-account-email", { fullName: user.fullName, recipientEmail: user.email, plainPassword: randomPassword });
             return new simpleResponse_1.SimpleResponse("Account Reset Successful");
         };
     }
-    getUserIdFromRequest(req) {
-        const auth = req.headers["authorization"] || req.headers["Authorization"];
-        if (!auth || Array.isArray(auth))
-            throw new unauthReq_1.UnauthReqException("Missing Authorization header");
-        const parts = auth.split(" ");
-        if (parts.length !== 2 || parts[0] !== "Bearer")
-            throw new unauthReq_1.UnauthReqException("Invalid Authorization header");
-        const payload = this.jwtService.verifyToken(parts[1]);
-        if (!(payload === null || payload === void 0 ? void 0 : payload.userId))
-            throw new unauthReq_1.UnauthReqException("Invalid authentication token");
-        return payload.userId;
+    generateRandomPassword(length = 12) {
+        const allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=";
+        const randomBuffer = (0, crypto_1.randomBytes)(length);
+        let password = "";
+        for (let index = 0; index < length; index += 1) {
+            const charIndex = randomBuffer[index] % allowedCharacters.length;
+            password += allowedCharacters.charAt(charIndex);
+        }
+        return password;
     }
 }
 exports.AuthService = AuthService;
