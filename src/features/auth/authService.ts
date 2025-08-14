@@ -1,6 +1,6 @@
 import { Request } from "express";
-import { JwtService } from "../../common/utils/services/jwtService";
-import { PasswdService } from "../../common/utils/services/passwdService";
+import { jwtService } from "../../common/utils/services/jwtService";
+import { passwdService } from "../../common/utils/services/passwdService";
 import { SignupDto } from "./dtos/signupDto";
 import { LoginDto } from "./dtos/loginDto";
 import { UpdateAccountInfoDto } from "./dtos/updateAccountInfoDto";
@@ -15,8 +15,8 @@ import { ResourceConflict } from "../../common/exceptions/http/resourceConflict"
 import { UnauthReqException } from "../../common/exceptions/http/unauthReq";
 
 export class AuthService {
-  private passwdService = new PasswdService();
-  private jwtService = new JwtService();
+  private passwdService = passwdService;
+  private jwtService = jwtService;
 
   private getUserIdFromRequest(req: Request): number {
     const auth = req.headers["authorization"] || req.headers["Authorization"];

@@ -12,8 +12,8 @@ const resourceConflict_1 = require("../../common/exceptions/http/resourceConflic
 const unauthReq_1 = require("../../common/exceptions/http/unauthReq");
 class AuthService {
     constructor() {
-        this.passwdService = new passwdService_1.PasswdService();
-        this.jwtService = new jwtService_1.JwtService();
+        this.passwdService = passwdService_1.passwdService;
+        this.jwtService = jwtService_1.jwtService;
         this.createAccount = async (dto, req) => {
             const existing = await userRepository_1.userRepository.findByEmail(dto.email);
             if (existing)

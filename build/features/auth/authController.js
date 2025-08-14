@@ -14,7 +14,7 @@ class AuthController {
         this.contoller.addRoute("post", "/login", this.authService.login, loginDto_1.LoginDto);
         this.contoller.addRoute("patch", "/update-account", this.authService.updateAccountInfo, updateAccountInfoDto_1.UpdateAccountInfoDto);
         this.contoller.addRoute("delete", "/", this.authService.deleteAccount);
-        this.contoller.addRoute("post", "/reset-password", this.authService.resetAccount, resetAccountDto_1.ResetAccountDto);
+        this.contoller.addRoute("post", "/reset-account", this.authService.resetAccount, resetAccountDto_1.ResetAccountDto);
         this.contoller.addRoute("post", "/change-password", this.authService.changePasswd, changePasswordDto_1.ChangePasswordDto);
     }
     constructor() {
