@@ -9,13 +9,14 @@ const class_validator_1 = require("class-validator");
 const express_1 = require("express");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const badReq_1 = require("../../exceptions/http/badReq");
+const authGuardHandler_1 = require("../../middlewares/authGuardHandler");
 class Controller {
     constructor() {
         this.router = (0, express_1.Router)();
     }
     // Implementation
     addRoute(method, path, serviceMethod, dtoType) {
-        this.router[method](path, (0, express_async_handler_1.default)(async (req, res) => {
+        this.router[method](path, authGuardHandler_1.authGuard.handler, (0, express_async_handler_1.default)(async (req, res) => {
             var _a;
             let dtoInstance = undefined;
             if (dtoType) {

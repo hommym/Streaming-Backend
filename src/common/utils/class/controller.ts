@@ -3,9 +3,11 @@ import { validate, ValidationError } from "class-validator";
 import { Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 import { BadReqException } from "../../exceptions/http/badReq";
+import type { RouteType } from "../../../types/controllerTypes";
+import { authGuard } from "../../middlewares/authGuardHandler";
 
 export class Controller {
-  private  router = Router();
+  private router = Router();
 
   // Overload for routes without DTO validation
   public addRoute<R>(method: RouteType, path: string, serviceMethod: (arg1: undefined, req: Request) => Promise<R> | R): void;
@@ -15,6 +17,7 @@ export class Controller {
   public addRoute<T extends object, R>(method: RouteType, path: string, serviceMethod: (arg1: T | undefined, req: Request) => Promise<R> | R, dtoType?: ClassConstructor<T>): void {
     this.router[method](
       path,
+      authGuard.handler,
       asyncHandler(async (req: Request, res: Response) => {
         let dtoInstance: T | undefined = undefined;
         if (dtoType) {
@@ -38,7 +41,6 @@ export class Controller {
     );
   }
 
- 
   public getRouter() {
     return this.router;
   }
