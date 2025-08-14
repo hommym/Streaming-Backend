@@ -6,6 +6,7 @@ import cors from "cors";
 import { database } from "../../database/database";
 import { mainServerRouter } from "./router";
 import { errorHandler } from "../../common/middlewares/errorHandler";
+import { serverEvents } from "../../events/serverEvents";
 
 export const app = express();
 
@@ -19,14 +20,13 @@ app.use("/api/v1", mainServerRouter);
 // error handling middlware
 app.use(errorHandler);
 
-
-
 const port = process.env.PORT ? process.env.PORT : 8000;
 
 const startServer = async () => {
   try {
     app.listen(port, async () => {
       await database.dbInit(true);
+      serverEvents.setUpAllListners("main");
       console.log(`Server listening on port ${port}..`);
     });
   } catch (error) {
