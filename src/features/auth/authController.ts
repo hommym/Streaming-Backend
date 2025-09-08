@@ -26,8 +26,8 @@ class AuthController {
     this.addEndPoints();
   }
 
-  public getRouter() {
-    return this.contoller.getRouter();
+  public get Router() {
+    return this.contoller.Router;
   }
 }
 

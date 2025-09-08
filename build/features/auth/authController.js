@@ -22,8 +22,8 @@ class AuthController {
         this.authService = new authService_1.AuthService();
         this.addEndPoints();
     }
-    getRouter() {
-        return this.contoller.getRouter();
+    get Router() {
+        return this.contoller.Router;
     }
 }
 exports.authController = new AuthController();

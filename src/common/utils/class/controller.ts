@@ -41,7 +41,7 @@ export class Controller {
     );
   }
 
-  public getRouter() {
+  public get Router() {
     return this.router;
   }
 }

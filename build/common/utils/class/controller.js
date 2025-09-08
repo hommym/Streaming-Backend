@@ -37,7 +37,7 @@ class Controller {
             res.json(result);
         }));
     }
-    getRouter() {
+    get Router() {
         return this.router;
     }
 }
