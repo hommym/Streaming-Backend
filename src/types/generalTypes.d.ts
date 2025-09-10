@@ -22,10 +22,10 @@ export type MovieDetails = {
   description: string;
   posterUrl: string;
   backdropUrl: string;
-  rating: string;
+  rating: number;
   releaseYear: string;
   duration: number; // in minutes
-  genre: string[];
+  genres: string[];
   streamUrl?: string;
 };
 
@@ -33,7 +33,7 @@ export type MovieOverview = {
   id: number;
   title: string;
   posterUrl: string;
-  rating: string;
+  rating: number;
   releaseYear: string;
 };
 
@@ -41,7 +41,7 @@ export type MovieOverviewList = {
   page: number;
   movies: MovieOverview[];
   totalPages: number;
-  totalMovies: number;
+  totalNo: number;
 };
 
 export type TMDBMovie = {
@@ -60,6 +60,7 @@ export type TMDBMovie = {
   video: boolean; // Defaults to true
   vote_average: number; // Defaults to 0
   vote_count: number; // Defaults to 0
+  runtime?:number
 };
 
 export type TMDBResult = {
