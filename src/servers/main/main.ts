@@ -7,6 +7,7 @@ import { database } from "../../database/database";
 import { mainServerRouter } from "./router";
 import { errorHandler } from "../../common/middlewares/errorHandler";
 import { serverEvents } from "../../events/serverEvents";
+import { redis } from "../../common/utils/class/redis";
 
 export const app = express();
 
@@ -27,6 +28,7 @@ const startServer = async () => {
     app.listen(port, async () => {
       await database.dbInit(true);
       serverEvents.setUpAllListners("main");
+      await redis.connect();
       console.log(`Server listening on port ${port}..`);
     });
   } catch (error) {

@@ -13,6 +13,7 @@ const database_1 = require("../../database/database");
 const router_1 = require("./router");
 const errorHandler_1 = require("../../common/middlewares/errorHandler");
 const serverEvents_1 = require("../../events/serverEvents");
+const redis_1 = require("../../common/utils/class/redis");
 exports.app = (0, express_1.default)();
 exports.app.use((0, cors_1.default)({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], credentials: true }));
 exports.app.use(express_1.default.json());
@@ -26,6 +27,7 @@ const startServer = async () => {
         exports.app.listen(port, async () => {
             await database_1.database.dbInit(true);
             serverEvents_1.serverEvents.setUpAllListners("main");
+            await redis_1.redis.connect();
             console.log(`Server listening on port ${port}..`);
         });
     }
