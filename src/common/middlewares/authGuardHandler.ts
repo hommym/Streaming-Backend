@@ -27,6 +27,8 @@ class AuthGuard {
     } else {
       const user = await userRepository.findById(this.getUserIdFromRequest(req));
       if (!user) throw new UnauthReqException("Invalid Auth Token");
+      req.user = user;
+      next();
     }
   });
 }
