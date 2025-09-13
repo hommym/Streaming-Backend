@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { createClient, createClientPool, RedisClientPoolType, RedisFunctions, RedisModules, RedisScripts, RespVersions } from "redis";
+import { createClientPool, RedisClientPoolType, RedisFunctions, RedisModules, RedisScripts, RespVersions } from "redis";
 
 class RedisClient {
   private pool?: RedisClientPoolType<RedisModules, RedisFunctions, RedisScripts, RespVersions, {}>;
@@ -13,12 +13,33 @@ class RedisClient {
     console.log("Connecting to Redis-Server..");
     this.pool = await redisPool.connect();
     console.log("Redis-Server Ready");
+    return true;
   };
 
-  public get client() {
+  public disconnect = async () => {
+    if (this.pool && this.pool.isOpen) {
+      await this.pool.close();
+      this.pool = undefined;
+      console.log("Redis-Server Disconnected");
+    }
+  };
+
+  private get client() {
     if (this.pool && this.pool.isOpen) return this.pool;
     else throw new Error("Redis Server Error");
   }
+
+  public cacheData = async (key: string, value: string) => {
+    await this.client.set(key, value);
+  };
+
+  public getCachedData = async (key: string) => {
+    return await this.client.get(key);
+  };
+
+  public removeCachedData = async (key: string) => {
+    await this.client.del(key); // 1 if removed, 0 if key didn't exist
+  };
 
   // add a method for geting raw clients from the pool(Add if needed)
 }

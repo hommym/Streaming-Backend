@@ -14,7 +14,6 @@ import { SimpleResponse } from "../../common/utils/dtos/simpleResponse";
 import { LoginResponse, PublicUser } from "./dtos/loginResponse";
 import { ResourceConflict } from "../../common/exceptions/http/resourceConflict";
 import { UnauthReqException } from "../../common/exceptions/http/unauthReq";
-import { emailService } from "../../common/utils/services/emailService";
 import { serverEvents } from "../../events/serverEvents";
 import { ResourceNotFoundException } from "../../common/exceptions/http/resourceNotFound";
 
@@ -41,7 +40,7 @@ export class AuthService {
 
   public login = async (dto: LoginDto, req: Request) => {
     const user = await userRepository.findByEmail(dto.email);
-    if (!user) throw new BadReqException("Invalid email or password");
+    if (!user) throw new ResourceNotFoundException("Invalid email or password");
     await this.passwdService.verifyEncryptedData(dto.password, user.passwordHash);
     const token = this.jwtService.generateToken(user.id);
     const publicUser: PublicUser = {

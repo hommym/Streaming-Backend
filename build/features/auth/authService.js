@@ -6,7 +6,6 @@ const jwtService_1 = require("../../common/utils/services/jwtService");
 const passwdService_1 = require("../../common/utils/services/passwdService");
 const userRepository_1 = require("../../database/repositories/userRepository");
 const user_1 = require("../../database/models/user");
-const badReq_1 = require("../../common/exceptions/http/badReq");
 const simpleResponse_1 = require("../../common/utils/dtos/simpleResponse");
 const loginResponse_1 = require("./dtos/loginResponse");
 const resourceConflict_1 = require("../../common/exceptions/http/resourceConflict");
@@ -34,7 +33,7 @@ class AuthService {
         this.login = async (dto, req) => {
             const user = await userRepository_1.userRepository.findByEmail(dto.email);
             if (!user)
-                throw new badReq_1.BadReqException("Invalid email or password");
+                throw new resourceNotFound_1.ResourceNotFoundException("Invalid email or password");
             await this.passwdService.verifyEncryptedData(dto.password, user.passwordHash);
             const token = this.jwtService.generateToken(user.id);
             const publicUser = {

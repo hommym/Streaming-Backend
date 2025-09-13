@@ -19,14 +19,17 @@ export class Database {
 
   async dbInit(resetDB: boolean = false) {
     const files = (await readdir(this.migPath)).filter((f) => f.endsWith(".sql")).sort();
-    console.log("Applying Migrations...");
-    if (resetDB) await this.resetDB();
-    for (const file of files) {
-      const filePath = path.join(this.migPath, file);
-      const queries = await readFile(filePath, { encoding: "utf-8" });
-      await this.dbPool.query(queries);
+
+    if (resetDB) {
+      await this.resetDB();
+      console.log("Applying Migrations...");
+      for (const file of files) {
+        const filePath = path.join(this.migPath, file);
+        const queries = await readFile(filePath, { encoding: "utf-8" });
+        await this.dbPool.query(queries);
+      }
+      console.log("Migrations Applied");
     }
-    console.log("Migrations Applied");
   }
 
   private async resetDB() {

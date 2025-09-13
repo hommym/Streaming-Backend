@@ -22,15 +22,16 @@ class Database {
     }
     async dbInit(resetDB = false) {
         const files = (await (0, promises_1.readdir)(this.migPath)).filter((f) => f.endsWith(".sql")).sort();
-        console.log("Applying Migrations...");
-        if (resetDB)
+        if (resetDB) {
             await this.resetDB();
-        for (const file of files) {
-            const filePath = path_1.default.join(this.migPath, file);
-            const queries = await (0, promises_1.readFile)(filePath, { encoding: "utf-8" });
-            await this.dbPool.query(queries);
+            console.log("Applying Migrations...");
+            for (const file of files) {
+                const filePath = path_1.default.join(this.migPath, file);
+                const queries = await (0, promises_1.readFile)(filePath, { encoding: "utf-8" });
+                await this.dbPool.query(queries);
+            }
+            console.log("Migrations Applied");
         }
-        console.log("Migrations Applied");
     }
     async resetDB() {
         const dbName = process.env.DATABASE_NAME;
