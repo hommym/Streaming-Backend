@@ -1,7 +1,7 @@
 import { movieinfoService } from "../../src/features/movie-info/movieInfoService";
 import { TMDBResult, TMDBMovie } from "../../src/types/generalTypes";
 
-describe("MovieInfoService.tmdbApiResponseParser", () => {
+describe("Runing MovieInfoService.tmdbApiResponseParser test..", () => {
   it("should parse TMDBResult to MovieOverviewList", () => {
     const tmdbResult: TMDBResult = {
       page: 1,
