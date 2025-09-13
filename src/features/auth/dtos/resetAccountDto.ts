@@ -4,5 +4,5 @@ import { IsEmail } from "class-validator";
 export class ResetAccountDto {
   @Expose()
   @IsEmail()
-  email!: string;
+  email: string;
 }
