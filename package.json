@@ -7,7 +7,7 @@
     "server:main": "nodemon ./build/servers/main/main.js",
     "server:file": "nodemon ./build/servers/file/index.js",
     "server:ws": "nodemon ./build/servers/ws/index.js",
-    "start": "npm test & npm run server:main",
+    "start": "npm run server:main",
     "test": "jest"
   },
   "dependencies": {
@@ -40,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.12",
     "@types/nodemailer": "^6.4.17",
+    "@types/supertest": "^6.0.3",
     "jest": "^30.1.3",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1"
