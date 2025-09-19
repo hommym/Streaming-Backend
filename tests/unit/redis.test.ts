@@ -1,14 +1,12 @@
 import { redis } from "../../src/common/utils/services/redis";
 
 describe("Testing Redis Service...", () => {
-  
-
   it("Testing Redis Connection...", async () => {
     expect(await redis.connect()).toBe(true);
   });
 
   it("Testing Caching...", () => {
-    expect(redis.cacheData("key", "Hello")).resolves;
+    expect(redis.cacheData({ key: "key", value: "Hello" })).resolves;
   });
 
   it("Testing Cache Retrieval...", async () => {
