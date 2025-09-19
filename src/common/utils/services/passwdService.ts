@@ -18,7 +18,7 @@ import { UnauthReqException } from "../../exceptions/http/unauthReq";
 
   public verifyEncryptedData = async (rawData: string, encryptedData: string) => {
     const isPasswordCorrect = await bcrypt.compare(rawData, encryptedData);
-    if (!isPasswordCorrect) throw new UnauthReqException("Invalid Password and Email");
+    if (!isPasswordCorrect) throw new UnauthReqException("Invalid Password or Email");
   };
 }
 

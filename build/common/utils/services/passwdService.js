@@ -17,7 +17,7 @@ class PasswdService {
         this.verifyEncryptedData = async (rawData, encryptedData) => {
             const isPasswordCorrect = await bcrypt_1.default.compare(rawData, encryptedData);
             if (!isPasswordCorrect)
-                throw new unauthReq_1.UnauthReqException("Invalid Password and Email");
+                throw new unauthReq_1.UnauthReqException("Invalid Password or Email");
         };
         if (process.env.PasswordEncrptRounds)
             this.encryptRounds = +process.env.PasswordEncrptRounds;
