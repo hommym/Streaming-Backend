@@ -60,7 +60,7 @@ export type TMDBMovie = {
   video: boolean; // Defaults to true
   vote_average: number; // Defaults to 0
   vote_count: number; // Defaults to 0
-  runtime?:number
+  runtime?: number;
 };
 
 export type TMDBResult = {
@@ -68,4 +68,9 @@ export type TMDBResult = {
   results: TMDBMovie[];
   total_pages: number;
   total_results: number;
+};
+
+export type CacheArgs = {
+  key: string;
+  value: string;
 };

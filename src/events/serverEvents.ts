@@ -1,10 +1,12 @@
 import Event from "events";
-import { ResetAccountEmailArgs, ServerType, WelcomeEmailArgs } from "../types/generalTypes";
+import { CacheArgs, ResetAccountEmailArgs, ServerType, WelcomeEmailArgs } from "../types/generalTypes";
 import { emailService } from "../common/utils/services/emailService";
+import { redis } from "../common/utils/services/redis";
 
 type EventName = {
   "send-congrats-email": WelcomeEmailArgs;
   "send-reset-account-email": ResetAccountEmailArgs;
+  "cache-data": CacheArgs;
 };
 
 class ServerEvents {
@@ -23,6 +25,7 @@ class ServerEvents {
         // events for main server
         this.createListener("send-congrats-email", emailService.sendWelcomeEmail);
         this.createListener("send-reset-account-email", emailService.sendPasswordResetEmail);
+        this.createListener("cache-data", redis.cacheData);
         break;
 
       case "file":

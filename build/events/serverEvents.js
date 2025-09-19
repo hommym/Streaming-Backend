@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.serverEvents = void 0;
 const events_1 = __importDefault(require("events"));
 const emailService_1 = require("../common/utils/services/emailService");
+const redis_1 = require("../common/utils/services/redis");
 class ServerEvents {
     constructor() {
         this.event = new events_1.default();
@@ -21,6 +22,7 @@ class ServerEvents {
                 // events for main server
                 this.createListener("send-congrats-email", emailService_1.emailService.sendWelcomeEmail);
                 this.createListener("send-reset-account-email", emailService_1.emailService.sendPasswordResetEmail);
+                this.createListener("cache-data", redis_1.redis.cacheData);
                 break;
             case "file":
                 // events for file server

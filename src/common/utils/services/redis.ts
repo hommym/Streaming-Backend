@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { createClientPool, RedisClientPoolType, RedisFunctions, RedisModules, RedisScripts, RespVersions } from "redis";
+import { CacheArgs } from "../../../types/generalTypes";
 
 class RedisClient {
   private pool?: RedisClientPoolType<RedisModules, RedisFunctions, RedisScripts, RespVersions, {}>;
@@ -29,8 +30,8 @@ class RedisClient {
     else throw new Error("Redis Server Error");
   }
 
-  public cacheData = async (key: string, value: string) => {
-    await this.client.set(key, value);
+  public cacheData = async (args: CacheArgs) => {
+    await this.client.set(args.key, args.value);
   };
 
   public getCachedData = async (key: string) => {

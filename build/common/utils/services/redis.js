@@ -27,8 +27,8 @@ class RedisClient {
                 console.log("Redis-Server Disconnected");
             }
         };
-        this.cacheData = async (key, value) => {
-            await this.client.set(key, value);
+        this.cacheData = async (args) => {
+            await this.client.set(args.key, args.value);
         };
         this.getCachedData = async (key) => {
             return await this.client.get(key);
