@@ -31,7 +31,8 @@ class RedisClient {
   }
 
   public cacheData = async (args: CacheArgs) => {
-    await this.client.set(args.key, args.value);
+    if (args.exp) await this.client.set(args.key, args.value, { expiration: { type: "EX", value: args.exp } });
+    else await this.client.set(args.key, args.value);
   };
 
   public getCachedData = async (key: string) => {

@@ -73,4 +73,5 @@ export type TMDBResult = {
 export type CacheArgs = {
   key: string;
   value: string;
+  exp?: number;  // time in seconds 
 };
