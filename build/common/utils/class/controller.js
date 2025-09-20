@@ -34,7 +34,7 @@ class Controller {
                 res.status(204).end();
                 return;
             }
-            res.json(result);
+            res.status(200).json(result);
         }));
     }
     get Router() {

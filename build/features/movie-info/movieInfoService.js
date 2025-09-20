@@ -1,7 +1,36 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.movieinfoService = void 0;
+const redis_1 = require("../../common/utils/services/redis");
+const tmdbService_1 = require("../../common/utils/services/tmdbService");
+const serverEvents_1 = require("../../events/serverEvents");
+const badReq_1 = require("../../common/exceptions/http/badReq");
 class MovieInfoService {
+    constructor() {
+        this.getMovieList = async (_dto, req) => {
+            const category = req.params.cat;
+            let page = req.query.page ? req.query.page : "1";
+            try {
+                +page;
+            }
+            catch (error) {
+                throw new badReq_1.BadReqException("Query parameter page must be a number");
+            }
+            if (!["top_rated", "now_playing", "popular", "upcoming"].includes(category))
+                throw new badReq_1.BadReqException("Url parameter cat must be one of these values [top_rated,now_playing,popular,upcoming]");
+            const cachedData = await redis_1.redis.getCachedData(`category:${category}:page:${page}`);
+            let res;
+            if (cachedData) {
+                res = JSON.parse(cachedData);
+            }
+            else {
+                const tmdbRes = (await tmdbService_1.tmdbService.getData(`/${category}?page=${page}`));
+                res = this.tmdbApiResponseParser(tmdbRes);
+                serverEvents_1.serverEvents.emit("cache-data", { key: `category:${category}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
+            }
+            return res;
+        };
+    }
     tmdbApiResponseParser(response) {
         let parsedData;
         if ("results" in response) {
