@@ -75,3 +75,6 @@ export type CacheArgs = {
   value: string;
   exp?: number;  // time in seconds 
 };
+
+
+export type MovieListCategory="top_rated"|"now_playing"|"popular"|"upcoming"
