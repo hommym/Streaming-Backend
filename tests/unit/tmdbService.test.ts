@@ -3,10 +3,10 @@ import { TMDBResult } from "../../src/types/generalTypes";
 
 describe("Running TMDB service test...", () => {
   it("Running test for single movie retrieval..", () => {
-    expect(tmdbService.getData("/movie/100")).resolves;
+    expect(tmdbService.getData("/100")).resolves;
   });
 
   it("Running test for movie list retrieval..",() => {
-    expect(tmdbService.getData("/movie/popular")).resolves;
+    expect(tmdbService.getData("/popular")).resolves;
   });
 });
