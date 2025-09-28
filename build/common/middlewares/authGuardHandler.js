@@ -11,7 +11,8 @@ const userRepository_1 = require("../../database/repositories/userRepository");
 class AuthGuard {
     constructor() {
         this.jwtService = jwtService_1.jwtService;
-        this.publicPath = ["/api/v1/auth/signup", "/api/v1/auth/login", "/api/v1/auth/reset-account"];
+        // reg for /api/v1/auth/$(login|signup|reset-account), and /api/v1/movie-info/*
+        this.publicPathPatterns = [/^\/api\/v1\/auth\/(login|signup|reset-account)$/, /^\/api\/v1\/movie-info\/.+$/];
         this.handler = (0, express_async_handler_1.default)(async (req, res, next) => {
             if (this.isPathPublic(`${req.baseUrl}${req.url}`)) {
                 next();
@@ -38,7 +39,13 @@ class AuthGuard {
         return payload.userId;
     }
     isPathPublic(urlPath) {
-        return this.publicPath.includes(urlPath);
+        let isV = false;
+        for (let regEx of this.publicPathPatterns) {
+            isV = regEx.test(urlPath);
+            if (isV)
+                break;
+        }
+        return isV;
     }
 }
 exports.authGuard = new AuthGuard();

@@ -6,7 +6,9 @@ import { userRepository } from "../../database/repositories/userRepository";
 
 class AuthGuard {
   private jwtService = jwtService;
-  private publicPath = ["/api/v1/auth/signup", "/api/v1/auth/login", "/api/v1/auth/reset-account"];
+
+  // reg for /api/v1/auth/$(login|signup|reset-account), and /api/v1/movie-info/*
+  private publicPathPatterns = [/^\/api\/v1\/auth\/(login|signup|reset-account)$/, /^\/api\/v1\/movie-info\/.+$/];
 
   private getUserIdFromRequest(req: Request): number {
     const auth = req.headers["authorization"] || req.headers["Authorization"];
@@ -18,7 +20,12 @@ class AuthGuard {
     return payload.userId;
   }
   private isPathPublic(urlPath: string) {
-    return this.publicPath.includes(urlPath);
+    let isV = false;
+    for (let regEx of this.publicPathPatterns) {
+      isV = regEx.test(urlPath);
+      if(isV)break;
+    }
+    return isV;
   }
 
   handler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
