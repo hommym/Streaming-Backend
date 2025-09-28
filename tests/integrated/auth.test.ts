@@ -13,7 +13,7 @@ describe("Testing Auth Features...", () => {
   let token: string = "";
 
   beforeAll(async () => {
-    await database.dbInit(true);
+    await database.dbInit();
     serverEvents.setUpAllListners("main");
     await redis.connect();
     req = request(app);
