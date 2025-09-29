@@ -7,6 +7,7 @@ class MovieInfoController {
 
   private addEndPoints() {
     this.contoller.addRoute<MovieOverviewList>("get", "/category/:cat", movieinfoService.getMovieList);
+    this.contoller.addRoute<MovieOverviewList>("get", "/search", movieinfoService.search);
   }
 
   constructor() {

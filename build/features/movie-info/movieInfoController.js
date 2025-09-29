@@ -6,6 +6,7 @@ const movieInfoService_1 = require("./movieInfoService");
 class MovieInfoController {
     addEndPoints() {
         this.contoller.addRoute("get", "/category/:cat", movieInfoService_1.movieinfoService.getMovieList);
+        this.contoller.addRoute("get", "/search", movieInfoService_1.movieinfoService.search);
     }
     constructor() {
         this.contoller = new controller_1.Controller();

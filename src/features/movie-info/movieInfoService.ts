@@ -4,6 +4,7 @@ import { tmdbService } from "../../common/utils/services/tmdbService";
 import { serverEvents } from "../../events/serverEvents";
 import { MovieDetails, MovieListCategory, MovieOverview, MovieOverviewList, TMDBMovie, TMDBResult } from "../../types/generalTypes";
 import { BadReqException } from "../../common/exceptions/http/badReq";
+import { UnauthReqException } from "../../common/exceptions/http/unauthReq";
 
 class MovieInfoService {
   public tmdbApiResponseParser(response: TMDBResult): MovieOverviewList;
@@ -47,15 +48,19 @@ class MovieInfoService {
     return parsedData;
   }
 
-  public getMovieList = async (_dto: undefined, req: Request) => {
-    const category = req.params.cat;
-    let page: string | number = req.query.page ? (req.query.page as string) : "1";
-
+  public getPageFromQueryParam(queryParam?: string) {
+    let page = queryParam ? queryParam : "1";
     try {
       +page;
     } catch (error) {
       throw new BadReqException("Query parameter page must be a number");
     }
+    return page;
+  }
+
+  public getMovieList = async (_dto: undefined, req: Request) => {
+    const category = req.params.cat;
+    let page = this.getPageFromQueryParam(req.query.page as string);
 
     if (!["top_rated", "now_playing", "popular", "upcoming"].includes(category)) throw new BadReqException("Url parameter cat must be one of these values [top_rated,now_playing,popular,upcoming]");
 
@@ -69,6 +74,24 @@ class MovieInfoService {
       serverEvents.emit("cache-data", { key: `category:${category}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
     }
 
+    return res;
+  };
+
+  public search = async (_dto: undefined, req: Request) => {
+    let res: MovieOverviewList;
+    const keyword = req.query.keyword;
+    const page = this.getPageFromQueryParam(req.query.page as string);
+
+    if (!keyword) new UnauthReqException("No value passed for query parameter keyword");
+    const cachedData = await redis.getCachedData(`search:${keyword}:page:${page}`);
+
+    if (cachedData) {
+      res = JSON.parse(cachedData);
+    } else {
+      const tmdbRes = (await tmdbService.getData(`https://api.themoviedb.org/3/search/movie?page=${page}&query=${keyword}`)) as TMDBResult;
+      res = this.tmdbApiResponseParser(tmdbRes);
+      serverEvents.emit("cache-data", { key: `search:${keyword}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
+    }
     return res;
   };
 }
