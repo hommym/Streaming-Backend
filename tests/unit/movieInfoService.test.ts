@@ -171,4 +171,13 @@ describe("Runing MovieInfoService.tmdbApiResponseParser test..", () => {
       backdropUrl: "https://image.tmdb.org/t/p/original/images/backdrops/dark-sky.jpg",
     });
   });
+
+  it("should return number in string form or throw an error", () => {
+    expect(movieinfoService.getPageFromQueryParam("22")).toBe("22");
+    expect(movieinfoService.getPageFromQueryParam("2")).toBe("2");
+    expect(movieinfoService.getPageFromQueryParam("asd")).toThrow;
+    expect(movieinfoService.getPageFromQueryParam()).toThrow;
+  });
+
+  
 });

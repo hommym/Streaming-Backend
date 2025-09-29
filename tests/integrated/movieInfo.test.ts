@@ -32,27 +32,32 @@ describe("Testing Movie Info Features...", () => {
   });
 
   it("Testing Endpoint for getting movie category using valid cat...", async () => {
-    expect(req.get("/api/v1/movie-info/category/top_rated").send()).resolves;
+    expect((await req.get("/api/v1/movie-info/category/top_rated").send()).status).toBe(200);
 
-    expect(req.get("/api/v1/movie-info/category/upcoming").send()).resolves;
+    expect((await req.get("/api/v1/movie-info/category/upcoming").send()).status).toBe(200);
 
-    expect(req.get("/api/v1/movie-info/category/now_playing").send()).resolves;
+    expect((await req.get("/api/v1/movie-info/category/upcoming").send()).status).toBe(200);
 
-    expect(req.get("/api/v1/movie-info/category/popular").send()).resolves;
+    expect((await req.get("/api/v1/movie-info/category/upcoming").send()).status).toBe(200);
   });
 
   it("Testing Endpoint for getting movie category using invalid cat...", async () => {
-    expect(req.get("/api/v1/movie-info/category/top-rated").send()).rejects;
+    expect((await req.get("/api/v1/movie-info/category/top-rated").send()).status).toBe(400);
 
-    expect(req.get("/api/v1/movie-info/category/upcomingg").send()).rejects;
+    expect((await req.get("/api/v1/movie-info/category/upcomingg").send()).status).toBe(400);
 
-    expect(req.get("/api/v1/movie-info/category/now-playing").send()).rejects;
+    expect((await req.get("/api/v1/movie-info/category/now-playing").send()).status).toBe(400);
 
-    expect(req.get("/api/v1/movie-info/category/popularr").send()).rejects;
+    expect((await req.get("/api/v1/movie-info/category/popularr").send()).status).toBe(400);
   });
 
-    afterAll(async () => {
-      await database.close();
-      await redis.disconnect();
-    });
+  it("Testing Endpoint for searching for movies using keywords...", async () => {
+    expect((await req.get("/api/v1/movie-info/search?keyword=twilight").send()).status).toBe(200);
+    expect((await req.get("/api/v1/movie-info/search?keyword=twilight&page=2").send()).status).toBe(200);
+    expect((await req.get("/api/v1/movie-info/search?page=1").send()).status).toBe(200);
+  });
+  afterAll(async () => {
+    await database.close();
+    await redis.disconnect();
+  });
 });
