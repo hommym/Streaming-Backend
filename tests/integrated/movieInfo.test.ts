@@ -32,23 +32,23 @@ describe("Testing Movie Info Features...", () => {
   });
 
   it("Testing Endpoint for getting movie category using valid cat...", async () => {
-    expect(req.get("/api/v1/movie-info/category/top_rated").set("Authorization", `Bearer ${token}`).send()).resolves;
+    expect(req.get("/api/v1/movie-info/category/top_rated").send()).resolves;
 
-    expect(req.get("/api/v1/movie-info/category/upcoming").set("Authorization", `Bearer ${token}`).send()).resolves;
+    expect(req.get("/api/v1/movie-info/category/upcoming").send()).resolves;
 
-    expect(req.get("/api/v1/movie-info/category/now_playing").set("Authorization", `Bearer ${token}`).send()).resolves;
+    expect(req.get("/api/v1/movie-info/category/now_playing").send()).resolves;
 
-    expect(req.get("/api/v1/movie-info/category/popular").set("Authorization", `Bearer ${token}`).send()).resolves;
+    expect(req.get("/api/v1/movie-info/category/popular").send()).resolves;
   });
 
   it("Testing Endpoint for getting movie category using invalid cat...", async () => {
-    expect(req.get("/api/v1/movie-info/category/top-rated").set("Authorization", `Bearer ${token}`).send()).rejects;
+    expect(req.get("/api/v1/movie-info/category/top-rated").send()).rejects;
 
-    expect(req.get("/api/v1/movie-info/category/upcomingg").set("Authorization", `Bearer ${token}`).send()).rejects;
+    expect(req.get("/api/v1/movie-info/category/upcomingg").send()).rejects;
 
-    expect(req.get("/api/v1/movie-info/category/now-playing").set("Authorization", `Bearer ${token}`).send()).rejects;
+    expect(req.get("/api/v1/movie-info/category/now-playing").send()).rejects;
 
-    expect(req.get("/api/v1/movie-info/category/popularr").set("Authorization", `Bearer ${token}`).send()).rejects;
+    expect(req.get("/api/v1/movie-info/category/popularr").send()).rejects;
   });
 
     afterAll(async () => {
