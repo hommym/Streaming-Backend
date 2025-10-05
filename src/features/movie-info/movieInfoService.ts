@@ -82,7 +82,7 @@ class MovieInfoService {
     const keyword = req.query.keyword;
     const page = this.getPageFromQueryParam(req.query.page as string);
 
-    if (!keyword) new UnauthReqException("No value passed for query parameter keyword");
+    if (!keyword) new BadReqException("No value passed for query parameter keyword");
     const cachedData = await redis.getCachedData(`search:${keyword}:page:${page}`);
 
     if (cachedData) {
@@ -91,6 +91,29 @@ class MovieInfoService {
       const tmdbRes = (await tmdbService.getData(`https://api.themoviedb.org/3/search/movie?page=${page}&query=${keyword}`)) as TMDBResult;
       res = this.tmdbApiResponseParser(tmdbRes);
       serverEvents.emit("cache-data", { key: `search:${keyword}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
+    }
+    return res;
+  };
+
+  public getMovieDetails = async (_dto: undefined, req: Request) => {
+    let movieId: string | number | undefined = req.query.movieId as string;
+    if (!movieId) throw new BadReqException("No value passed for query param movieId");
+    try {
+      movieId = +movieId as number;
+      if (!movieId) throw new Error();
+    } catch (error) {
+      throw new BadReqException("Query Parameter movieId must be a valid number");
+    }
+
+    let res: MovieDetails;
+    const cachedData = await redis.getCachedData(`movieId:${movieId}`);
+
+    if (cachedData) {
+      res = JSON.parse(cachedData);
+    } else {
+      const tmdbRes = (await tmdbService.getData(`/${movieId}`)) as TMDBMovie;
+      res = this.tmdbApiResponseParser(tmdbRes);
+      serverEvents.emit("cache-data", { key: `movieId:${movieId}`, value: JSON.stringify(res), exp: 86400 });
     }
     return res;
   };

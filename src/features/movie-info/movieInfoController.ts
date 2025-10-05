@@ -1,5 +1,5 @@
 import { Controller } from "../../common/utils/class/controller";
-import { MovieOverviewList } from "../../types/generalTypes";
+import { MovieDetails, MovieOverviewList } from "../../types/generalTypes";
 import { movieinfoService } from "./movieInfoService";
 
 class MovieInfoController {
@@ -8,6 +8,7 @@ class MovieInfoController {
   private addEndPoints() {
     this.contoller.addRoute<MovieOverviewList>("get", "/category/:cat", movieinfoService.getMovieList);
     this.contoller.addRoute<MovieOverviewList>("get", "/search", movieinfoService.search);
+    this.contoller.addRoute<MovieDetails>("get", "/detail", movieinfoService.getMovieDetails);
   }
 
   constructor() {

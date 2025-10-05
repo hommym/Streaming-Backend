@@ -5,7 +5,6 @@ const redis_1 = require("../../common/utils/services/redis");
 const tmdbService_1 = require("../../common/utils/services/tmdbService");
 const serverEvents_1 = require("../../events/serverEvents");
 const badReq_1 = require("../../common/exceptions/http/badReq");
-const unauthReq_1 = require("../../common/exceptions/http/unauthReq");
 class MovieInfoService {
     constructor() {
         this.getMovieList = async (_dto, req) => {
@@ -30,7 +29,7 @@ class MovieInfoService {
             const keyword = req.query.keyword;
             const page = this.getPageFromQueryParam(req.query.page);
             if (!keyword)
-                new unauthReq_1.UnauthReqException("No value passed for query parameter keyword");
+                new badReq_1.BadReqException("No value passed for query parameter keyword");
             const cachedData = await redis_1.redis.getCachedData(`search:${keyword}:page:${page}`);
             if (cachedData) {
                 res = JSON.parse(cachedData);
@@ -39,6 +38,30 @@ class MovieInfoService {
                 const tmdbRes = (await tmdbService_1.tmdbService.getData(`https://api.themoviedb.org/3/search/movie?page=${page}&query=${keyword}`));
                 res = this.tmdbApiResponseParser(tmdbRes);
                 serverEvents_1.serverEvents.emit("cache-data", { key: `search:${keyword}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
+            }
+            return res;
+        };
+        this.getMovieDetails = async (_dto, req) => {
+            let movieId = req.query.movieId;
+            if (!movieId)
+                throw new badReq_1.BadReqException("No value passed for query param movieId");
+            try {
+                movieId = +movieId;
+                if (!movieId)
+                    throw new Error();
+            }
+            catch (error) {
+                throw new badReq_1.BadReqException("Query Parameter movieId must be a valid number");
+            }
+            let res;
+            const cachedData = await redis_1.redis.getCachedData(`movieId:${movieId}`);
+            if (cachedData) {
+                res = JSON.parse(cachedData);
+            }
+            else {
+                const tmdbRes = (await tmdbService_1.tmdbService.getData(`/${movieId}`));
+                res = this.tmdbApiResponseParser(tmdbRes);
+                serverEvents_1.serverEvents.emit("cache-data", { key: `movieId:${movieId}`, value: JSON.stringify(res), exp: 86400 });
             }
             return res;
         };
