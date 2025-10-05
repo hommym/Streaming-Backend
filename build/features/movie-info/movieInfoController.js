@@ -8,6 +8,7 @@ class MovieInfoController {
         this.contoller.addRoute("get", "/category/:cat", movieInfoService_1.movieinfoService.getMovieList);
         this.contoller.addRoute("get", "/search", movieInfoService_1.movieinfoService.search);
         this.contoller.addRoute("get", "/detail", movieInfoService_1.movieinfoService.getMovieDetails);
+        this.contoller.addRoute("get", "/similar", movieInfoService_1.movieinfoService.getSimilarMovies);
     }
     constructor() {
         this.contoller = new controller_1.Controller();

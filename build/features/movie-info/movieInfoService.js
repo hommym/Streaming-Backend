@@ -65,6 +65,31 @@ class MovieInfoService {
             }
             return res;
         };
+        this.getSimilarMovies = async (_dto, req) => {
+            let movieId = req.query.movieId;
+            let page = this.getPageFromQueryParam(req.query.page);
+            if (!movieId)
+                throw new badReq_1.BadReqException("No value passed for query param movieId");
+            try {
+                movieId = +movieId;
+                if (!movieId)
+                    throw new Error();
+            }
+            catch (error) {
+                throw new badReq_1.BadReqException("Query Parameter movieId must be a valid number");
+            }
+            let res;
+            const cachedData = await redis_1.redis.getCachedData(`similar:${movieId}:page:${page}`);
+            if (cachedData) {
+                res = JSON.parse(cachedData);
+            }
+            else {
+                const tmdbRes = (await tmdbService_1.tmdbService.getData(`/${movieId}/similar`));
+                res = this.tmdbApiResponseParser(tmdbRes);
+                serverEvents_1.serverEvents.emit("cache-data", { key: `similar:${movieId}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
+            }
+            return res;
+        };
     }
     tmdbApiResponseParser(response) {
         let parsedData;

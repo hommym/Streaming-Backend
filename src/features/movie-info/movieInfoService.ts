@@ -117,6 +117,33 @@ class MovieInfoService {
     }
     return res;
   };
+
+  public getSimilarMovies = async (_dto: undefined, req: Request) => {
+
+     let movieId: string | number | undefined = req.query.movieId as string;
+      let page = this.getPageFromQueryParam(req.query.page as string);
+     if (!movieId) throw new BadReqException("No value passed for query param movieId");
+     try {
+       movieId = +movieId as number;
+       if (!movieId) throw new Error();
+     } catch (error) {
+       throw new BadReqException("Query Parameter movieId must be a valid number");
+     }
+
+     let res: MovieOverviewList;
+     const cachedData = await redis.getCachedData(`similar:${movieId}:page:${page}`);
+
+     if (cachedData) {
+       res = JSON.parse(cachedData);
+     } else {
+       const tmdbRes = (await tmdbService.getData(`/${movieId}/similar`)) as TMDBResult;
+       res = this.tmdbApiResponseParser(tmdbRes);
+       serverEvents.emit("cache-data", { key: `similar:${movieId}:page:${page}`, value: JSON.stringify(res), exp: 86400 });
+     }
+     return res;
+
+
+  };
 }
 
 export const movieinfoService = new MovieInfoService();
