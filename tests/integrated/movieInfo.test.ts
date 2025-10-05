@@ -6,29 +6,13 @@ import { serverEvents } from "../../src/events/serverEvents";
 import { redis } from "../../src/common/utils/services/redis";
 
 describe("Testing Movie Info Features...", () => {
-  let fullName = "John Doe";
-  let email = "testmail2@gmail.com";
-  let password = "strongPass123";
   let req: TestAgent;
-  let token: string = "";
 
   beforeAll(async () => {
     await database.dbInit();
     serverEvents.setUpAllListners("main");
     await redis.connect();
     req = request(app);
-    await req.post("/api/v1/auth/signup").send({
-      fullName,
-      email,
-      password,
-    });
-
-    let res = await req.post("/api/v1/auth/login").send({
-      email,
-      password,
-    });
-
-    token = res.body.token;
   });
 
   it("Testing Endpoint for getting movie category using valid cat...", async () => {
@@ -57,11 +41,16 @@ describe("Testing Movie Info Features...", () => {
     expect((await req.get("/api/v1/movie-info/search?page=1").send()).status).toBe(200);
   });
 
-
   it("Testing Endpoint for getting details of movies ...", async () => {
     expect((await req.get("/api/v1/movie-info/detail?movieId=twilight").send()).status).toBe(400);
-     expect((await req.get("/api/v1/movie-info/detail").send()).status).toBe(400);
+    expect((await req.get("/api/v1/movie-info/detail").send()).status).toBe(400);
     expect((await req.get("/api/v1/movie-info/detail?movieId=100").send()).status).toBe(200);
+  });
+
+  it("Testing Endpoint for getting similar of movies...", async () => {
+    expect((await req.get("/api/v1/movie-info/similar?movieId=twilight").send()).status).toBe(400);
+    expect((await req.get("/api/v1/movie-info/similar?page=2").send()).status).toBe(400);
+    expect((await req.get("/api/v1/movie-info/similar?movieId=100").send()).status).toBe(200);
   });
   afterAll(async () => {
     await database.close();
