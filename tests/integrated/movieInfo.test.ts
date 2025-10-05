@@ -56,6 +56,13 @@ describe("Testing Movie Info Features...", () => {
     expect((await req.get("/api/v1/movie-info/search?keyword=twilight&page=2").send()).status).toBe(200);
     expect((await req.get("/api/v1/movie-info/search?page=1").send()).status).toBe(200);
   });
+
+
+  it("Testing Endpoint for getting details of movies ...", async () => {
+    expect((await req.get("/api/v1/movie-info/detail?movieId=twilight").send()).status).toBe(400);
+     expect((await req.get("/api/v1/movie-info/detail").send()).status).toBe(400);
+    expect((await req.get("/api/v1/movie-info/detail?movieId=100").send()).status).toBe(200);
+  });
   afterAll(async () => {
     await database.close();
     await redis.disconnect();
