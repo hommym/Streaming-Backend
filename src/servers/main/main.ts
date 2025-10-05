@@ -25,7 +25,7 @@ const port = process.env.PORT ? process.env.PORT : 8000;
 
 export const startServer = async () => {
   try {
-    await database.dbInit(true);
+    await database.dbInit();
     serverEvents.setUpAllListners("main");
     await redis.connect();
     app.listen(port, async () => {

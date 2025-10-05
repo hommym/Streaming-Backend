@@ -24,7 +24,7 @@ exports.app.use(errorHandler_1.errorHandler);
 const port = process.env.PORT ? process.env.PORT : 8000;
 const startServer = async () => {
     try {
-        await database_1.database.dbInit(true);
+        await database_1.database.dbInit();
         serverEvents_1.serverEvents.setUpAllListners("main");
         await redis_1.redis.connect();
         exports.app.listen(port, async () => {
