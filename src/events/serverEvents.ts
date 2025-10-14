@@ -3,6 +3,7 @@ import { CacheArgs, ResetAccountEmailArgs, ServerType, WelcomeEmailArgs } from "
 import { emailService } from "../common/utils/services/emailService";
 import { redis } from "../common/utils/services/redis";
 
+
 type EventName = {
   "send-congrats-email": WelcomeEmailArgs;
   "send-reset-account-email": ResetAccountEmailArgs;
@@ -37,6 +38,10 @@ class ServerEvents {
         break;
     }
 
+    process.on("exit",async ()=>{
+      // releease resources synchronous
+      console.log("Resources released")
+    })
     console.log("Listeners Setup");
   }
 

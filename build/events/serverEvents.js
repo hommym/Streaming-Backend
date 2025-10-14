@@ -31,6 +31,10 @@ class ServerEvents {
                 // events for websocket server
                 break;
         }
+        process.on("exit", async () => {
+            // releease resources synchronous
+            console.log("Resources released");
+        });
         console.log("Listeners Setup");
     }
     emit(eventName, data) {

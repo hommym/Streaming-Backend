@@ -14,6 +14,7 @@ const router_1 = require("./router");
 const errorHandler_1 = require("../../common/middlewares/errorHandler");
 const serverEvents_1 = require("../../events/serverEvents");
 const redis_1 = require("../../common/utils/services/redis");
+const playwrightService_1 = require("../../common/utils/services/playwrightService");
 exports.app = (0, express_1.default)();
 exports.app.use((0, cors_1.default)({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], credentials: true }));
 exports.app.use(express_1.default.json());
@@ -27,6 +28,7 @@ const startServer = async () => {
         await database_1.database.dbInit();
         serverEvents_1.serverEvents.setUpAllListners("main");
         await redis_1.redis.connect();
+        await playwrightService_1.playwrightService.launchBrowser();
         exports.app.listen(port, async () => {
             console.log(`Server listening on port ${port}..`);
         });

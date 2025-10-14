@@ -8,6 +8,7 @@ import { mainServerRouter } from "./router";
 import { errorHandler } from "../../common/middlewares/errorHandler";
 import { serverEvents } from "../../events/serverEvents";
 import { redis } from "../../common/utils/services/redis";
+import { playwrightService } from "../../common/utils/services/playwrightService";
 
 export const app = express();
 
@@ -28,6 +29,7 @@ export const startServer = async () => {
     await database.dbInit();
     serverEvents.setUpAllListners("main");
     await redis.connect();
+    await playwrightService.launchBrowser();
     app.listen(port, async () => {
       console.log(`Server listening on port ${port}..`);
     });
